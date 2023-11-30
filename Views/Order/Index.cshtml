@@ -1,0 +1,127 @@
+﻿@model SolforbOrdersTest.Models.OrdersListViewModel
+
+@{
+    ViewData["Title"] = "Заказы";
+}
+
+<h1>Заказы</h1>
+<div class="mb-3">
+    <a type="button" class="btn btn-primary" asp-action="Create">+ Новый заказ</a>
+</div>
+<div class="p-2 my-3 border rounded ">
+    <form asp-action="Index" method="get">
+        <div class="mb-3 row">
+            <div>Период:</div>
+            <div class="row">
+                <div class="w-auto">
+                    <input class="col-sm form-control" asp-for="@Model.StartDate" type="date" />
+                </div>
+                <div class=" w-auto"> - </div>
+                <div class="w-auto">
+                    <input class=" col-sm form-control" asp-for="@Model.EndDate" type="date" />
+                </div>
+            </div>
+        </div>
+        <div class=" mb-3 row">
+            <div class="col-sm">
+                <label asp-for="@Model.OrderNumbers"></label>
+                <select multiple class="form-select" asp-for="@Model.OrderNumbersIds" asp-items="@Model.OrderNumbers">
+                    <option>Все заказы</option>
+                </select>
+            </div>
+            <div class="col-sm">
+                <label asp-for="@Model.OrderItems"></label>
+                <select multiple="multiple" class="form-select" asp-for="@Model.OrderItemNames" asp-items="@Model.OrderItems">
+                    <option value="@null">Все товары</option>
+                </select>
+            </div>
+            <div class="col-sm">
+                <label asp-for="@Model.ItemUnits"></label>
+                <select multiple class="form-select" asp-for="@Model.ItemUnitsNames" asp-items="@Model.ItemUnits">
+                    <option value="@null">Все единицы измерения</option>
+                </select>
+            </div>
+
+            <div class="col-sm">
+                <label asp-for="@Model.Providers"></label>
+                <select multiple class="form-select" asp-for="@Model.ProviderIds" asp-items="@Model.Providers">
+                    <option>Все поставщики</option>
+                </select>
+            </div>
+        </div>
+
+        <div>
+            <button class="btn btn-primary" type="submit">Применить фильтр</button>
+        </div>
+    </form>
+</div>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th class="col-1">
+                @Html.DisplayNameFor(model => model.Orders.First().Date)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Orders.First().Number)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Orders.First().ProviderName)
+            </th>
+            <th class=" col-4">
+                @Html.DisplayNameFor(model => model.Orders.First().OrderItems)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Orders)
+        {
+            <tr>
+
+                <td>
+                    <label>@item.Date.ToString("d")</label>
+                    <label class="text-muted">@item.Date.ToString("t")</label>
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Number)
+                </td>
+
+                <td>
+                    @Html.DisplayFor(modelItem => item.ProviderName)
+                </td>
+                <td>
+                    <table class="list-group">
+                        @foreach (var orderItem in item.OrderItems)
+                        {
+                            <tr>
+                                <td class="col-3"><label>@orderItem.Name</label></td>
+                                <td class="col-sm-1"><label>@orderItem.Quantity</label></td>
+                                <td class="col-sm-1"><label>@orderItem.Unit</label></td>
+                            </tr>
+                        }
+                    </table>
+                </td>
+
+                <td class="">
+                    <a asp-action="Edit" asp-route-id="@item.Id"
+                       type="button" class="btn btn-sm btn-outline-secondary">Изменить</a>
+                    <a asp-action="Details" asp-route-id="@item.Id"
+                       type="button" class="btn btn-sm btn-outline-secondary">Просмотр</a>
+                    <a asp-action="Delete" asp-route-id="@item.Id" method="post"
+                       type="submit" class="btn btn-sm btn-outline-danger">Удалить</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@section Scripts{
+    <script>
+        $('select').change(function () {
+            if ($('option:first', this).is(':selected')) {
+                $('option:not(:first)', this).prop('selected', false);
+            }
+        });
+    </script>
+}

@@ -1,0 +1,134 @@
+﻿@model SolforbOrdersTest.Models.OrderEditViewModel
+<div>
+    <form asp-controller="Order" asp-action="Edit" method="post">
+        @Html.AntiForgeryToken()
+        <div>
+            <h2>Редактирование заказа</h2>
+        </div>
+
+        <div class="mb-3 col-2">
+            <label asp-for="Number" class="form-label"></label>
+            <input asp-for="Number" class="form-control" />
+            <span asp-validation-for="Number" class="text-danger"></span>
+        </div>
+        <div class="mb-3 col-4">
+            <label asp-for="Date" class="form-label"></label>
+            <input asp-for="Date" class="form-control" />
+            <span asp-validation-for="Date" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3 col-4">
+            <label asp-for="ProviderId" class="form-label"></label>
+            <select asp-for="ProviderId" asp-items="@Model.Providers" class="form-select"></select>
+            <span asp-validation-for="ProviderId" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label>Строки заказа:</label>
+            <table id="orderItemsTable" class="table">
+                <thead>
+                    <tr>
+                        <th>Наименование</th>
+                        <th>Количество</th>
+                        <th>Единица измерения</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody id="items">
+
+                    @for (var i = 0; i < Model.OrderItems.Count; i++)
+                    {
+                        <tr class="orderItem">
+                            <input type="hidden" class="itemId" asp-for="@Model.OrderItems[i].Id" />
+                            <td class="col-4">
+                                <input class="itemName form-control" asp-for="@Model.OrderItems[i].Name" />
+                                <span asp-validation-for="@Model.OrderItems[i].Name" class="text-danger"></span>
+                            </td>
+                            <td class="col-2">
+                                <input class="itemQuantity form-control" asp-for="@Model.OrderItems[i].Quantity" />
+                                <span asp-validation-for="@Model.OrderItems[i].Quantity" class="text-danger"></span>
+                            </td>
+                            <td class="col-2">
+                                <input class="itemUnit form-control" asp-for="@Model.OrderItems[i].Unit" />
+                                <span asp-validation-for="@Model.OrderItems[i].Unit" class="text-danger"></span>
+                            </td>
+
+                            <td><button type="button" class="deleteItemButton btn btn-outline-danger" onclick="removeRow(this)">Удалить</button></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            <button onclick="addRow()" type="button" class="btn btn-secondary">Добавить строку</button>
+
+        </div>
+
+        <div class="mb-3">
+            <button type="submit" class="btn btn-primary">Сохранить</button>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <script>
+
+        var table = document.getElementById("orderItemsTable");
+
+        $(document).ready(function () {
+            updateDeleteButtonState();
+        })
+
+        function updateDeleteButtonState() {
+            var table = document.getElementById("orderItemsTable");
+            if (table.tBodies[0].rows.length == 1) {
+                $('.deleteItemButton').prop("disabled", true);
+            }
+            else {
+                $('.deleteItemButton').prop("disabled", false);
+            }
+        }
+
+        function addRow() {
+
+            var table = document.getElementById("orderItemsTable");
+
+            var clone = $(".orderItem:first-of-type").clone().appendTo("#items");
+            var itemNumber = table.tBodies[0].rows.length - 1;
+            $(clone).find("input").val('');
+            $(clone).find("span").empty();
+            $(clone).find(".itemId").attr("name", `OrderItems[${itemNumber}].Id`).val(0);
+            $(clone).find(".itemId").attr("id", `OrderItems_${itemNumber}__Id`);
+            $(clone).find(".itemName").attr("name", `OrderItems[${itemNumber}].Name`);
+            $(clone).find(".itemName").attr("id", `OrderItems_${itemNumber}__Name`);
+            $(clone).find(".itemQuantity").attr("name", `OrderItems[${itemNumber}].Quantity`);
+            $(clone).find(".itemQuantity").attr("id", `OrderItems_${itemNumber}__Quantity`);
+            $(clone).find(".itemUnit").attr("name", `OrderItems[${itemNumber}].Unit`);
+            $(clone).find(".itemUnit").attr("id", `OrderItems_${itemNumber}__Unit`);
+
+            updateDeleteButtonState();
+        }
+
+        function removeRow(button) {
+            var row = button.parentNode.parentNode;
+            $(row).remove();
+
+            reindexItems();
+            updateDeleteButtonState();
+        }
+
+        function reindexItems() {
+            var table = document.getElementById("orderItemsTable");
+            var rows = table.tBodies[0].rows;
+            for (let i = 0; i < rows.length; i++) {
+                $(rows[i]).find(".itemId").attr("name", `OrderItems[${i}].Id`);
+                $(rows[i]).find(".itemId").attr("id", `OrderItems_${i}__Id`);
+                $(rows[i]).find(".itemName").attr("name", `OrderItems[${i}].Name`);
+                $(rows[i]).find(".itemName").attr("id", `OrderItems_${i}__Name`);
+                $(rows[i]).find(".itemQuantity").attr("name", `OrderItems[${i}].Quantity`);
+                $(rows[i]).find(".itemQuantity").attr("id", `OrderItems_${i}__Quantity`);
+                $(rows[i]).find(".itemUnit").attr("name", `OrderItems[${i}].Unit`);
+                $(rows[i]).find(".itemUnit").attr("id", `OrderItems_${i}__Unit`);
+            }
+        }
+
+    </script>
+}

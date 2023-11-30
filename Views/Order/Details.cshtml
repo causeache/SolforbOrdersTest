@@ -1,0 +1,68 @@
+﻿@model SolforbOrdersTest.Models.OrderDetailsViewModel
+
+@{
+    ViewData["Title"] = $"Заказ № {Model.Number}";
+}
+
+<h1>Заказ № @Model.Number</h1>
+
+<div>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Number)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Number)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Date)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Date)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.ProviderName)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.ProviderName)
+        </dd>
+    </dl>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.OrderItems[0].Name)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.OrderItems[0].Quantity)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.OrderItems[0].Unit)
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.OrderItems)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Quantity)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Unit)
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+</div>
+<div>
+    <a type="button" class="btn btn-outline-secondary" asp-action="Edit" asp-route-id="@Model.Id">Редактировать заказ</a>
+    <a type="button" class="btn btn-outline-secondary" asp-action="Index">Вернуться к списку заказов</a>
+    <a type="button" class="btn btn-outline-danger" asp-action="Delete" asp-route-id="@Model.Id">Удалить заказ</a>
+</div>
